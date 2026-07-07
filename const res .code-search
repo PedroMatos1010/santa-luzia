@@ -1,0 +1,59 @@
+# Query: const res 
+# ContextLines: 1
+
+11 results - 11 files
+
+src/app/banner.tsx:
+  29      // 2. O Pedido à API: Pedimos apenas 1 resultado (limit=1) e incluímos os dados da imagem
+  30:     const res = await fetch(`${process.env.NEXT_PUBLIC_DRUPAL_URL}/jsonapi/node/evento?include=field_imagem&sort=field_data&page[limit]=2`);
+  31          cache: 'no-store'
+
+src/app/logo.tsx:
+  29      // 2. O Pedido à API: Pedimos apenas 1 resultado (limit=1) e incluímos os dados da imagem
+  30:     const res = await fetch('http://festa-santa-luzia-api.ddev.site/jsonapi/node/logo?page[limit]=1&include=field_imagem', {
+  31          cache: 'no-store'
+
+src/app/page.tsx:
+  8    // Fazemos o fetch diretamente ao endpoint JSON do teu DDEV
+  9:   const res = await fetch(`${process.env.NEXT_PUBLIC_DRUPAL_URL}/jsonapi/node/evento?include=field_imagem&sort=field_data&page[limit]=2`);
+  10      cache: 'no-store' // Para garantir que vês as alterações na hora durante o desenvolvimento local
+
+src/app/ProximosEventos.tsx:
+  31  export default async function ProximosEventos() {
+  32:     const res = await fetch(`${process.env.NEXT_PUBLIC_DRUPAL_URL}/jsonapi/node/evento?include=field_imagem&sort=field_data&page[limit]=2`);
+  33          cache: 'no-store'
+
+src/app/SeccaoNoticias.tsx:
+  28  export default async function SecaoNoticias() {
+  29:     const res = await fetch(`${process.env.NEXT_PUBLIC_DRUPAL_URL}/jsonapi/node/evento?include=field_imagem&sort=field_data&page[limit]=2`);
+  30          cache: 'no-store'
+
+src/app/cartaz/page.tsx:
+  24  export default async function Home() {
+  25:     const res = await fetch('http://festa-santa-luzia-api.ddev.site/jsonapi/node/cartaz?include=field_imagem', {
+  26          cache: 'no-store'
+
+src/app/como-ajudar/[slug]/page.tsx:
+  26      // 3. Fazer o pedido ao DDEV
+  27:     const res = await fetch(`http://festa-santa-luzia-api.ddev.site/jsonapi/node/page?filter[field_slug]=${slug}`, {
+  28          cache: 'no-store'
+
+src/app/loja/page.tsx:
+  18      // Fazemos o fetch diretamente ao endpoint JSON do teu DDEV
+  19:     const res = await fetch('http://festa-santa-luzia-api.ddev.site/jsonapi/node/produtos', {
+  20          cache: 'no-store' // Para garantir que vês as alterações na hora durante o desenvolvimento local
+
+src/app/noticias/page.tsx:
+  36      // 2. Fetch COM o include para trazer os ficheiros das imagens
+  37:     const res = await fetch(`${process.env.NEXT_PUBLIC_DRUPAL_URL}/jsonapi/node/evento?include=field_imagem&sort=field_data&page[limit]=2`);
+  38          cache: 'no-store'
+
+src/app/noticias/[id]/page.tsx:
+  13      // 3. Fazer o pedido ao Drupal
+  14:     const res = await fetch(urlFetch, {
+  15          cache: 'no-store'
+
+src/app/programa/page.tsx:
+  4      // 1. O "JOIN": O ?include vai forçar o Drupal a enviar os ficheiros na mesma resposta
+  5:     const res = await fetch('http://festa-santa-luzia-api.ddev.site/jsonapi/node/evento?include=field_imagem', {
+  6          cache: 'no-store'
