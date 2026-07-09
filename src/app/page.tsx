@@ -29,15 +29,16 @@ export default async function Home() {
 
       {/* 4. FATIA DOS BOTÕES DE BAIXO (Glassmorphism) */}
       <div className="p-8 max-w-6xl mx-auto flex gap-4 justify-between">
-        <Link href="/cartaz" className="bg-white/60 hover:bg-white/90 text-gray-900 backdrop-blur-md border border-gray-200/60 shadow-sm px-6 py-3 rounded-lg font-bold transition duration-300 cursor-pointer">
+        <Link href="/cartaz" className="bg-white/60 hover:bg-pink-50 hover:text-pink-600 text-gray-900 backdrop-blur-md border border-gray-200/60 shadow-sm px-6 py-3 rounded-lg font-bold transition duration-300 cursor-pointer">
           Ver Cartaz
         </Link>
-        <Link href="/como-ajudar/homepage" className="bg-white/60 hover:bg-white/90 text-gray-900 backdrop-blur-md border border-gray-200/60 shadow-sm px-6 py-3 rounded-lg font-bold transition duration-300 cursor-pointer">
+        <Link href="/como-ajudar/homepage" className="bg-white/60 hover:bg-pink-50 hover:text-pink-600 text-gray-900 backdrop-blur-md border border-gray-200/60 shadow-sm px-6 py-3 rounded-lg font-bold transition duration-300 cursor-pointer">
           Como Ajudar
         </Link>
       </div>
 
       <SecaoNoticias />
+
 
       {/* 6. Proximo evento */}
       <div className="px-8 max-w-6xl mx-auto mt-20">
@@ -47,7 +48,7 @@ export default async function Home() {
       {/* =========================================
           BANNER DE ESTATÍSTICAS
           ========================================= */}
-      <div className="w-full bg-white mt-28 mb-28 py-16 border-y border-gray-200 shadow-sm">
+      <div className="w-full bg-oklch(46.6% 0.025 107.3) mt-28 mb-28 py-16 border-y border-gray-200 shadow-sm">
         <div className="max-w-6xl mx-auto px-8 flex justify-between items-center">
 
           {/* ESTATÍSTICA 1 */}
