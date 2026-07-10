@@ -169,9 +169,6 @@ export default function RootLayout({
 
               </div>
             </div>
-
-
-
           </div>
 
           {/* ==============================================
@@ -209,9 +206,9 @@ export default function RootLayout({
               <Link href="https://jfmoreiradeconegos.pt" className=" bg-transparent border-transparent flex items-center justify-center text-xs font-bold rounded-lg hover:bg-gray-100 text-blue-900 shadow-sm transition cursor-pointer">
                 <Image src="/moreiradeconegos.png" alt="Junta de Freguesia de Moreira de Cónegos" width={80} height={20} />
               </Link>
-              <Link href="https://www.cm-guimaraes.pt" className=" bg-transparent border-transparent flex items-center justify-center text-xs font-bold rounded-lg hover:bg-gray-100 text-blue-900 shadow-sm transition cursor-pointer">
-                <Image src="/guimaraeslogo.png" alt="Câmara Municipal de Guimarães" width={150} height={60} />
-              </Link>
+              {/*<Link href="https://www.cm-guimaraes.pt" className=" bg-transparent border-transparent flex items-center justify-center text-xs font-bold rounded-lg hover:bg-gray-100 text-blue-900 shadow-sm transition cursor-pointer">
+                <Image src="/guimaraeslogo.png" alt="Câmara Municipal de Guimarães" width={80} height={20} />
+              </Link>*/}
             </div>
           </div>
         </footer>

@@ -4,6 +4,9 @@ import SecaoNoticias from './SeccaoNoticias';
 import Banner from './banner';
 import ProximosEventos from './ProximosEventos';
 import Cronometro from "./cronometro"; // Importação normal
+import BannerEstat from "./bannerestat";
+import Patrocinadores from "./patrocinadores";
+import Parceiros from "./parceiros";
 
 export default async function Home() {
   const res = await fetch('http://festa-santa-luzia-api.ddev.site/jsonapi/node/produtos', {
@@ -45,52 +48,17 @@ export default async function Home() {
       </div>
       <ProximosEventos />
 
-      {/* =========================================
-          BANNER DE ESTATÍSTICAS
-          ========================================= */}
-      <div className="w-full bg-oklch(46.6% 0.025 107.3) mt-28 mb-28 py-16 border-y border-gray-200 shadow-sm">
-        <div className="max-w-6xl mx-auto px-8 flex justify-between items-center">
-
-          {/* ESTATÍSTICA 1 */}
-          <div className="flex flex-col">
-            <span className="text-5xl md:text-6xl font-black text-pink-600">10</span>
-            <span className="text-lg font-bold text-gray-500 mt-2 uppercase tracking-wide">elementos</span>
-          </div>
-
-          {/* ESTATÍSTICA 2 */}
-          <div className="flex flex-col">
-            <span className="text-5xl md:text-6xl font-black text-pink-600">3</span>
-            <span className="text-lg font-bold text-gray-500 mt-2 uppercase tracking-wide">Dias de Romaria</span>
-          </div>
-
-          {/* ESTATÍSTICA 3 */}
-          <div className="flex flex-col">
-            <span className="text-5xl md:text-6xl font-black text-pink-600">+500</span>
-            <span className="text-lg font-bold text-gray-500 mt-2 uppercase tracking-wide">febras na Grelha</span>
-          </div>
-
-          {/* ESTATÍSTICA 4 */}
-          <div className="flex flex-col">
-            <span className="text-5xl md:text-6xl font-black text-pink-600">100%</span>
-            <span className="text-lg font-bold text-gray-500 mt-2 uppercase tracking-wide">Moreira</span>
-          </div>
-
-        </div>
-      </div>
+      <BannerEstat/>
 
       <div className="px-8 max-w-6xl mx-auto mt-20">
         <h2 className="text-4xl font-bold mb-2 text-gray-900">Patrocinadores</h2>
       </div>
-      <div className="w-full h-64 bg-white border-y border-gray-200 mt-4 flex items-center justify-center font-bold text-gray-400 text-2xl shadow-sm">
-        Patrocinadores
-      </div>
+      <Patrocinadores/>
 
       <div className="px-8 max-w-6xl mx-auto mt-20">
         <h2 className="text-4xl font-bold mb-2 text-gray-900">Parceiros</h2>
       </div>
-      <div className="w-full h-64 bg-white border-y border-gray-200 mt-4 flex items-center justify-center font-bold text-gray-400 text-2xl shadow-sm mb-10">
-        Parceiros
-      </div>
+     <Parceiros/>
 
     </main>
   );
