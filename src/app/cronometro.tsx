@@ -82,7 +82,6 @@ export default function Cronometro() {
             </span>
             <span className="text-sm font-bold text-gray-500 uppercase tracking-widest mt-1">Seg</span>
           </div>
-
         </div>
       )}
     </div>

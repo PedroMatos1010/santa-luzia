@@ -1,57 +1,95 @@
-// Tipagem para os dados que vêm do Drupal
-type Estatistica = {
-    id: string;
-    attributes: {
-        title: string;       // Ex: "Dias de Romaria"
-        field_valor: string; // Ex: "3", "+500"
+"use client";
+
+import { useEffect, useState } from 'react';
+
+export default function Cronometro() {
+  const [isClient, setIsClient] = useState(false);
+  const [terminou, setTerminou] = useState(false);
+  const [tempo, setTempo] = useState({ dias: 0, horas: 0, minutos: 0, segundos: 0 });
+
+  useEffect(() => {
+    setIsClient(true);
+    const alvo = new Date("2026-12-11T00:00:00").getTime();
+
+    const atualizar = () => {
+      const agora = Date.now();
+      const diff = alvo - agora;
+
+      if (diff <= 0) {
+        setTerminou(true);
+      } else {
+        setTempo({
+          dias: Math.floor(diff / (1000 * 60 * 60 * 24)),
+          horas: Math.floor((diff / (1000 * 60 * 60)) % 24),
+          minutos: Math.floor((diff / 1000 / 60) % 60),
+          segundos: Math.floor((diff / 1000) % 60),
+        });
+      }
     };
-};
 
-export default async function BannerEstat() {
-    // 1. Pedido à API do Drupal (tipo de conteúdo: estatistica)
-    const baseUrl = process.env.NEXT_PUBLIC_DRUPAL_URL || 'http://festa-santa-luzia-api.ddev.site';
-    const res = await fetch(`${baseUrl}/jsonapi/node/estatistica?sort=created`, {
-        cache: 'no-store'
-    });
+    atualizar(); 
+    const timer = setInterval(atualizar, 1000);
 
-    // Se a API falhar, não desenhamos nada para não estragar a página
-    if (!res.ok) {
-        return null;
-    }
+    return () => clearInterval(timer);
+  }, []);
 
-    const json = await res.json();
-    const estatisticas: Estatistica[] = json.data;
-
-    // Se não houver estatísticas publicadas, escondemos o banner
-    if (!estatisticas || estatisticas.length === 0) {
-        return null;
-    }
-
+  if (!isClient) {
     return (
-        <div className="w-full bg-cyan-50 mt-20 mb-20 py-20 border-y border-gray-800 shadow-2xl relative overflow-hidden">
-            
-            {/* Efeito de luz subtil no fundo */}
-            <div className="absolute inset-0 bg-pink-900/10 blur-[120px] pointer-events-none"></div>
-
-            {/* No telemóvel fica em coluna (flex-col), no PC fica em linha (md:flex-row) */}
-            <div className="max-w-6xl mx-auto px-8 flex flex-col md:flex-row justify-between items-center gap-12 md:gap-4 relative z-10">
-                  
-                {estatisticas.map((estat) => (
-                    <div key={estat.id} className="flex flex-col items-center text-center group">
-                        
-                        {/* O NÚMERO GIGANTE */}
-                        <span className="text-6xl md:text-7xl font-black text-pink-600 drop-shadow-[0_0_15px_rgba(219,39,119,0.3)] group-hover:scale-110 transition-transform duration-300">
-                            {estat.attributes.field_valor}
-                        </span>
-                        
-                        {/* A ETIQUETA / TÍTULO */}
-                        <span className="text-lg font-bold text-gray-400 mt-4 uppercase tracking-widest group-hover:text-white transition-colors duration-300">
-                            {estat.attributes.title}
-                        </span>
-                        
-                    </div>
-                ))}
-            </div>
-        </div>
+      <div className="w-full h-[100px] flex items-center justify-center">
+         <span className="text-gray-400 font-bold animate-pulse">A calcular tempo restante...</span>
+      </div>
     );
+  }
+
+  // A função clamp: min(tamanho min), ideal(vw), max(tamanho max)
+  // Aplicamos a mesma lógica de escala a todos para manter a harmonia visual
+  const fluidText = "text-[clamp(1rem,4vw,3.75rem)]"; 
+
+  return (
+    <div className="w-full flex items-center justify-center px-2 py-4 overflow-hidden">
+      {terminou ? (
+        <h2 className="text-3xl font-black text-pink-600 text-center uppercase animate-pulse">
+          A tradição está de volta!
+        </h2>
+      ) : (
+        /* O "flex-nowrap" é a chave: força o browser a manter tudo na mesma linha e a encolher */
+        <div className="flex flex-nowrap items-baseline justify-center gap-1 sm:gap-4">
+          
+          <span className={`${fluidText} font-black text-pink-600 shrink-0`}>
+            Faltam:
+          </span>
+          
+          <div className="flex items-baseline gap-1 sm:gap-4 shrink">
+            
+            <div className="flex flex-col items-center shrink">
+              <span className={`${fluidText} font-black text-pink-600`}>{tempo.dias}</span>
+              <span className="text-[8px] sm:text-xs font-bold text-gray-500 uppercase">Dias</span>
+            </div>
+            
+            <span className={`${fluidText} font-black text-gray-300 pb-1`}>:</span>
+            
+            <div className="flex flex-col items-center shrink">
+              <span className={`${fluidText} font-black text-pink-600`}>{tempo.horas.toString().padStart(2, '0')}</span>
+              <span className="text-[8px] sm:text-xs font-bold text-gray-500 uppercase">Horas</span>
+            </div>
+            
+            <span className={`${fluidText} font-black text-gray-300 pb-1`}>:</span>
+            
+            <div className="flex flex-col items-center shrink">
+              <span className={`${fluidText} font-black text-pink-600`}>{tempo.minutos.toString().padStart(2, '0')}</span>
+              <span className="text-[8px] sm:text-xs font-bold text-gray-500 uppercase">Min</span>
+            </div>
+            
+            <span className={`${fluidText} font-black text-gray-300 pb-1`}>:</span>
+            
+            <div className="flex flex-col items-center shrink">
+              <span className={`${fluidText} font-black text-pink-600`}>{tempo.segundos.toString().padStart(2, '0')}</span>
+              <span className="text-[8px] sm:text-xs font-bold text-gray-500 uppercase">Seg</span>
+            </div>
+            
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
