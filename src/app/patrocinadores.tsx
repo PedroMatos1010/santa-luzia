@@ -73,7 +73,7 @@ export default async function Patrocinadores() {
                         const urlDestino = patrocinador.attributes.field_link?.uri || '#';
 
                         return (
-                            <Link vv
+                            <Link
                                 href={urlDestino}
                                 key={patrocinador.id} 
                                 target="_blank" // Abre num novo separador
