@@ -70,10 +70,10 @@ export default async function Patrocinadores() {
                         if (!urlImagem) return null;
 
                         // Se o patrocinador não tiver link no Drupal, usamos '#' como fallback
-                        const urlDestino = patrocinador.attributes.field_link || '#';
+                        const urlDestino = patrocinador.attributes.field_link?.uri || '#';
 
                         return (
-                            <Link 
+                            <Link vv
                                 href={urlDestino}
                                 key={patrocinador.id} 
                                 target="_blank" // Abre num novo separador
