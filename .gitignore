@@ -39,3 +39,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# ignorar ficheiros de rotas locais
+.env
+.env.local
+.env.*.local
