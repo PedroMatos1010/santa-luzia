@@ -46,3 +46,8 @@ next-env.d.ts
 .env.*.local
 frontend-santa-luzia@0.1.0
 next
+
+# ignorar ficheiros de rotas locais
+.env
+.env.local
+.env.*.local
