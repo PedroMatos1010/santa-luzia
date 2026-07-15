@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
     '*.loca.lt'
   ],
   images: {
-    unoptimized: process.env.NODE_ENV === 'development',
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: 'https',
@@ -16,6 +16,11 @@ const nextConfig: NextConfig = {
         protocol: 'http',
         hostname: 'festa-santa-luzia-api.ddev.site'
       },
+      {
+	 protocol: 'https',
+      hostname: 'admin.santaluziamoreira.pt'
+      },
+
     ],
   },
 };
