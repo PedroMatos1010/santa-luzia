@@ -1,14 +1,37 @@
 import "./globals.css";
-import Link from 'next/link';
-import Image from 'next/image';
-import Logo from './logo'; // O Logo é importado aqui no Servidor
-import Header from './Header'; // O Header é importado aqui
+import Header from "./Header";
+import Logo from "./logo";
+import Link from "next/link";
+import Image from "next/image";
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  // 1. Rota de base dinâmica com fallback garantido para o DDEV
+  const baseUrl = process.env.NEXT_PUBLIC_DRUPAL_URL || 'http://festa-santa-luzia-api.ddev.site';
+  
+  // 2. Email de recurso (fallback) caso o Drupal esteja desligado
+  let emailContacto = "comissao.festas.santa.luzia.mc@gmail.com";
+
+  // 3. Blindagem Try/Catch e Fetch à rota correta do email
+  try {
+    const res = await fetch(`${baseUrl}/jsonapi/node/email?page[limit]=1`, {
+      cache: 'no-store'
+    });
+
+    if (res.ok) {
+      const json = await res.json();
+      // Opcionalmente procura por field_email_comissao ou field_email (consoante o nome exato que deste ao campo no Drupal)
+      const fetchedEmail = json?.data?.[0]?.attributes?.field_email_comissao || json?.data?.[0]?.attributes?.field_email;
+      
+      if (fetchedEmail) {
+        emailContacto = fetchedEmail;
+      }
+    } else {
+      console.error(`Erro na API de Email: O Drupal respondeu com ${res.status}`);
+    }
+  } catch (error) {
+    console.error("Falha crítica ao tentar contactar o DDEV no Layout:", error);
+  }
+
   return (
     <html lang="pt">
       <body className="bg-gray-50 min-h-screen flex flex-col justify-between text-gray-900">
@@ -49,7 +72,10 @@ export default function RootLayout({
               <p className="font-bold text-md">
                 Contactos:
                 <br />
-                <span className="font-normal">comissao.festas.santa.luzia.mc@gmail.com</span>
+                {/* Email dinâmico injetado aqui com link mailto ativo */}
+                <a href={`mailto:${emailContacto}`} className="font-normal hover:text-pink-300 transition-colors">
+                  {emailContacto}
+                </a>
               </p>
               <p className="font-bold text-md">
                 Morada:

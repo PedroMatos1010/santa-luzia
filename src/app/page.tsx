@@ -42,7 +42,6 @@ export default async function Home() {
 
       <SecaoNoticias />
 
-
       {/* 6. Proximo evento */}
       <div className="px-8 max-w-6xl mx-auto mt-20">
       </div>
@@ -55,11 +54,11 @@ export default async function Home() {
       </div>
       <Patrocinadores/>
 
-      <div className="px-8 max-w-6xl mx-auto mt-20">
+      <div id="parceiros" className="px-8 max-w-6xl mx-auto mt-20 scroll-mt-32">
         <h2 className="text-4xl font-bold mb-2 text-gray-900">Parceiros</h2>
       </div>
      <Parceiros/>
 
     </main>
   );
-}
+} 
