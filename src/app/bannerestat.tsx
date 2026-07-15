@@ -31,7 +31,7 @@ function obterRota(titulo: string): string {
 }
 
 export default async function BannerEstat() {
-    const baseUrl = process.env.NEXT_PUBLIC_DRUPAL_URL || 'http://festa-santa-luzia-api.ddev.site';
+    const baseUrl = process.env.NEXT_PUBLIC_DRUPAL_URL || 'https://admin.santaluziamoreira.pt';
     
     let estatisticas: Estatistica[] = [];
     let totalEventos = 0;

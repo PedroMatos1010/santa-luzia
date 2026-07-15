@@ -22,7 +22,7 @@ type ImagemAtributos = {
 };
 
 export default async function Home() {
-    const res = await fetch('http://festa-santa-luzia-api.ddev.site/jsonapi/node/cartaz?include=field_imagem', {
+    const res = await fetch('https://admin.santaluziamoreira.pt/jsonapi/node/cartaz?include=field_imagem', {
         cache: 'no-store'
     });
 
@@ -46,7 +46,7 @@ export default async function Home() {
                     const caminhoRelativo = ficheiroImagem?.attributes?.uri?.url;
                     
                     // BASE URL SEGURA (Igual ao que usamos no Banner e no Programa)
-                    const baseUrl = process.env.NEXT_PUBLIC_DRUPAL_URL || 'http://festa-santa-luzia-api.ddev.site';
+                    const baseUrl = process.env.NEXT_PUBLIC_DRUPAL_URL || 'https://admin.santaluziamoreira.pt';
                     
                     // LÓGICA BLINDADA: Verifica se o Drupal já mandou o 'http' no URL
                     let urlCompleto = null;

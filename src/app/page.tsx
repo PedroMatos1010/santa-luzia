@@ -9,7 +9,7 @@ import Patrocinadores from "./patrocinadores";
 import Parceiros from "./parceiros";
 
 export default async function Home() {
-  const res = await fetch('http://festa-santa-luzia-api.ddev.site/jsonapi/node/produtos', {
+  const res = await fetch('https://admin.santaluziamoreira.pt/jsonapi/node/produtos', {
     cache: 'no-store'
   });
 

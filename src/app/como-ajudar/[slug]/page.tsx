@@ -24,7 +24,7 @@ export default async function DetalheAjudar({ params }: { params: Promise<{ slug
     console.log("A consultar o DDEV com o slug:", slug);
 
     // 3. Fazer o pedido ao DDEV
-    const res = await fetch(`http://festa-santa-luzia-api.ddev.site/jsonapi/node/page?filter[field_slug]=${slug}`, {
+    const res = await fetch(`https://admin.santaluziamoreira.pt/jsonapi/node/page?filter[field_slug]=${slug}`, {
         cache: 'no-store'
     });
     const json = await res.json();

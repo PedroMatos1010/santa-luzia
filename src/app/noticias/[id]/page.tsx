@@ -8,7 +8,7 @@ export default async function DetalheNoticia({ params }: { params: Promise<{ id:
     const noticiaId = resolvedParams.id;
     
     // 2. Construir o URL exato
-    const urlFetch = `http://festa-santa-luzia-api.ddev.site/jsonapi/node/post/${noticiaId}`;
+    const urlFetch = `https://admin.santaluziamoreira.pt/jsonapi/node/post/${noticiaId}`;
 
     // 3. Fazer o pedido ao Drupal
     const res = await fetch(urlFetch, {

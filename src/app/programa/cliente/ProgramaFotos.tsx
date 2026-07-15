@@ -54,7 +54,7 @@ export default function ProgramaFotos({ evento, incluidos }: { evento: Evento[],
     const imagemId = item.relationships?.field_imagem?.data?.id;
     if (imagemId && incluidos) {
         const ficheiro = incluidos.find((inc) => inc.id === imagemId);
-        const baseUrl = process.env.NEXT_PUBLIC_DRUPAL_URL || 'http://festa-santa-luzia-api.ddev.site';
+        const baseUrl = process.env.NEXT_PUBLIC_DRUPAL_URL || 'https://admin.santaluziamoreira.pt';
         if (ficheiro?.attributes?.uri?.url) {
             urlImagem = `${baseUrl}${ficheiro.attributes.uri.url}`;
         }

@@ -34,7 +34,7 @@ type Noticia = {
 
 export default async function Home() {
     // 2. Fetch COM o include para trazer os ficheiros das imagens
-    const res = await fetch('http://festa-santa-luzia-api.ddev.site/jsonapi/node/post?include=field_imagem_post', {
+    const res = await fetch('https://admin.santaluziamoreira.pt/jsonapi/node/post?include=field_imagem_post', {
         cache: 'no-store'
     });
 
@@ -64,7 +64,7 @@ export default async function Home() {
                         const caminhoRelativo = ficheiroImagem?.attributes?.uri?.url;
 
                         // LÓGICA BLINDADA: Usa o env.local e verifica se o URL já tem domínio
-                        const baseUrl = process.env.NEXT_PUBLIC_DRUPAL_URL || 'http://festa-santa-luzia-api.ddev.site';
+                        const baseUrl = process.env.NEXT_PUBLIC_DRUPAL_URL || 'https://admin.santaluziamoreira.pt';
                         let urlCompleto = null;
                         if (caminhoRelativo) {
                             urlCompleto = caminhoRelativo.startsWith('http') 

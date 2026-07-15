@@ -33,7 +33,7 @@ type ImagemAtributos = {
 // O Next.js injeta automaticamente os parâmetros do URL em 'params'
 export default async function DynamicProgramaDetalhes({ params }: { params: { id: string } }) {
     const { id } = params;
-    const baseUrl = process.env.NEXT_PUBLIC_DRUPAL_URL || 'http://festa-santa-luzia-api.ddev.site';
+    const baseUrl = process.env.NEXT_PUBLIC_DRUPAL_URL || 'https://admin.santaluziamoreira.pt';
     
     // Pedido ao Drupal para trazer apenas o nó com este UUID específico
     const res = await fetch(`${baseUrl}/jsonapi/node/evento/${id}?include=field_imagem`, {

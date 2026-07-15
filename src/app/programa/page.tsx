@@ -2,7 +2,7 @@ import ProgramaFotos from './cliente/ProgramaFotos';
 
 export default async function ProgramaPage() {
     // 1. O "JOIN": O ?include vai forçar o Drupal a enviar os ficheiros na mesma resposta
-    const res = await fetch('http://festa-santa-luzia-api.ddev.site/jsonapi/node/evento?include=field_imagem', {
+    const res = await fetch('https://admin.santaluziamoreira.pt/jsonapi/node/evento?include=field_imagem', {
         cache: 'no-store'
     });
 

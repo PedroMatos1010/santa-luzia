@@ -29,7 +29,7 @@ type ImagemAtributos = {
 
 export default async function ProximosEventos() {
     // Garantir que temos o URL base correto
-    const baseUrl = process.env.NEXT_PUBLIC_DRUPAL_URL || 'http://festa-santa-luzia-api.ddev.site';
+    const baseUrl = process.env.NEXT_PUBLIC_DRUPAL_URL || 'https://admin.santaluziamoreira.pt';
     
     const res = await fetch(`${baseUrl}/jsonapi/node/evento?include=field_imagem&sort=field_data&page[limit]=2`, {
         cache: 'no-store'

@@ -31,7 +31,7 @@ type ImagemAtributos = {
 };
 
 export default async function LojaPage() {
-    const baseUrl = process.env.NEXT_PUBLIC_DRUPAL_URL || 'http://festa-santa-luzia-api.ddev.site';
+    const baseUrl = process.env.NEXT_PUBLIC_DRUPAL_URL || 'https://admin.santaluziamoreira.pt';
     
     // Fetch aos produtos no Drupal
     const res = await fetch(`${baseUrl}/jsonapi/node/produtos?include=field_imagem&sort=-created`, {

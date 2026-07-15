@@ -31,7 +31,7 @@ type ImagemAtributos = {
 };
 
 export default async function Parceiros() {
-    const baseUrl = process.env.NEXT_PUBLIC_DRUPAL_URL || 'http://festa-santa-luzia-api.ddev.site';
+    const baseUrl = process.env.NEXT_PUBLIC_DRUPAL_URL || 'https://admin.santaluziamoreira.pt';
     
     const res = await fetch(`${baseUrl}/jsonapi/node/parceiros?include=field_imagem&sort=created`, {
         cache: 'no-store'

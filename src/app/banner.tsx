@@ -27,7 +27,7 @@ type ImageIncluded = {
 
 export default async function Banner() {
     // 2. O Pedido à API: Pedimos apenas 1 resultado (limit=1) e incluímos os dados da imagem
-    const res = await fetch('http://festa-santa-luzia-api.ddev.site/jsonapi/node/Banner?page[limit]=1&include=field_imagem', {
+    const res = await fetch('https://admin.santaluziamoreira.pt/jsonapi/node/Banner?page[limit]=1&include=field_imagem', {
         cache: 'no-store'
     });
 

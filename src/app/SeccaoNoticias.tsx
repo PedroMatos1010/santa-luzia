@@ -26,7 +26,7 @@ type ImagemAtributos = {
 };
 
 export default async function SeccaoNoticias() {
-    const res = await fetch('http://festa-santa-luzia-api.ddev.site/jsonapi/node/post?sort=-created&page[limit]=2&include=field_imagem_post', {
+    const res = await fetch('https://admin.santaluziamoreira.pt/jsonapi/node/post?sort=-created&page[limit]=2&include=field_imagem_post', {
         cache: 'no-store'
     });
 
@@ -62,7 +62,7 @@ export default async function SeccaoNoticias() {
                         const ficheiroImagem = ficheirosIncluidos.find(item => item.id === imagemId);
                         const caminhoRelativo = ficheiroImagem?.attributes?.uri?.url;
 
-                        const baseUrl = process.env.NEXT_PUBLIC_DRUPAL_URL || 'http://festa-santa-luzia-api.ddev.site';
+                        const baseUrl = process.env.NEXT_PUBLIC_DRUPAL_URL || 'https://admin.santaluziamoreira.pt';
                         let urlImagem = null;
                         if (caminhoRelativo) {
                             urlImagem = caminhoRelativo.startsWith('http')

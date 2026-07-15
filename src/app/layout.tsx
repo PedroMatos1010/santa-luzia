@@ -6,7 +6,7 @@ import Image from "next/image";
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   // 1. Rota de base dinâmica com fallback garantido para o DDEV
-  const baseUrl = process.env.NEXT_PUBLIC_DRUPAL_URL || 'http://festa-santa-luzia-api.ddev.site';
+  const baseUrl = process.env.NEXT_PUBLIC_DRUPAL_URL || 'https://admin.santaluziamoreira.pt';
   
   // 2. Email de recurso (fallback) caso o Drupal esteja desligado
   let emailContacto = "comissao.festas.santa.luzia.mc@gmail.com";
