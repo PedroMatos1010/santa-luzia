@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import dynamic from 'next/dynamic';
 
-const MapaEstatico = dynamic(() => import('./MapaMoreira'), { 
+const MapaEstatico = dynamic(() => import('./MapaMoreiraViagem'), { 
     ssr: false,
     loading: () => (
         <div className="w-full h-full flex flex-col items-center justify-center bg-gray-100 animate-pulse text-gray-400">

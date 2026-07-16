@@ -77,14 +77,13 @@ export default function Header({ logo }: { logo: React.ReactNode }) {
               <div className="bg-gray-50 md:bg-white/90 md:backdrop-blur-md rounded-lg shadow-inner md:shadow-xl overflow-hidden flex flex-col md:border border-gray-100 mt-2 md:mt-0 pl-4 md:pl-0">
                 <Link href="/guia/como-chegar" className="px-4 py-3 text-sm text-gray-700 hover:bg-pink-50 hover:text-pink-600 font-bold border-b border-gray-100 transition">Como Chegar</Link>
                 <Link href="/guia/onde-comer" className="px-4 py-3 text-sm text-gray-700 hover:bg-pink-50 hover:text-pink-600 font-bold border-b border-gray-100 transition">Onde Comer</Link>
-                <Link href="/guia/mapa-do-evento" className="px-4 py-3 text-sm text-gray-700 hover:bg-pink-50 hover:text-pink-600 font-bold border-b border-gray-100 transition">Mapa do Evento</Link>
-                <Link href="/guia/o-que-visitar" className="px-4 py-3 text-sm text-gray-700 hover:bg-pink-50 hover:text-pink-600 font-bold border-b border-gray-100 transition">O que Visitar</Link>
-                <Link href="/guia/contactos" className="px-4 py-3 text-sm text-gray-700 hover:bg-pink-50 hover:text-pink-600 font-bold transition">Contactos</Link>
+                <Link href="/guia/mapa-evento" className="px-4 py-3 text-sm text-gray-700 hover:bg-pink-50 hover:text-pink-600 font-bold border-b border-gray-100 transition">Mapa do Evento</Link>
+                <Link href="/guia/patrimonio-local" className="px-4 py-3 text-sm text-gray-700 hover:bg-pink-50 hover:text-pink-600 font-bold border-b border-gray-100 transition">Património Local</Link>
               </div>
             </div>
           </div>
 
-          {/* 4. Botão Loja */}
+          {/* 4. Botão Loja */} 
           <div>
             <Link href="/loja" className="bg-pink-50 md:bg-white/80 hover:bg-pink-100 hover:text-pink-700 text-pink-600 md:backdrop-blur-md md:border border-pink-200 md:shadow-sm font-bold px-4 py-2 rounded-lg transition-all duration-300 block text-center md:text-left">
               Loja

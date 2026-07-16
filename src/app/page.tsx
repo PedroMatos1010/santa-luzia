@@ -21,7 +21,6 @@ export default async function Home() {
 
   return (
     <main className="bg-gray-50 min-h-screen">
-      {/* 2. FATIA DO TEXTO PRINCIPAL */}
       {/* 2. FATIA DO TEXTO PRINCIPAL (agora com margens curtas) */}
       <div className="px-8 max-w-6xl mx-auto mt-6 mb-4">
         <Cronometro />
@@ -40,7 +39,7 @@ export default async function Home() {
         </Link>
       </div>
 
-      <SecaoNoticias />
+      <SecaoNoticias/>
 
       {/* 6. Proximo evento */}
       <div className="px-8 max-w-6xl mx-auto mt-20">

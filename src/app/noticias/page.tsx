@@ -1,7 +1,6 @@
 import parse from 'html-react-parser';
 import Image from 'next/image';
 
-// 1. Tipos atualizados para refletir a estrutura relacional do JSON:API
 type ImagemAtributos = {
     id: string;
     attributes: {
@@ -23,99 +22,95 @@ type Noticia = {
         };
         field_comentarios: string;
     };
-        relationships?: {
-            field_imagem_post?: {
-                data?: {
-                    id: string;
-                } | null;
-            };
+    relationships?: {
+        field_imagem_post?: {
+            data?: {
+                id: string;
+            } | null;
         };
+    };
 };
 
 export default async function Home() {
-    // 2. Fetch COM o include para trazer os ficheiros das imagens
-    const res = await fetch('https://admin.santaluziamoreira.pt/jsonapi/node/post?include=field_imagem_post', {
-        cache: 'no-store'
-    });
+    const baseUrl = process.env.NEXT_PUBLIC_DRUPAL_URL;
 
-    if (!res.ok) {
-        return <div>Erro a carregar o site. Tente novamente mais tarde.</div>;
-    }
+    try {
+        const res = await fetch(`${baseUrl}/jsonapi/node/post?include=field_imagem_post`, {
+            cache: 'no-store'
+        });
 
-    const json = await res.json();
-    const noticias: Noticia[] = json.data;
+        if (!res.ok) {
+            return <div className="text-white text-center py-20 font-bold">Erro a carregar as notícias. Tente novamente mais tarde.</div>;
+        }
 
-    // Guardamos a lista de ficheiros extra que o Drupal enviou no fundo do pacote
-    const ficheirosIncluidos: ImagemAtributos[] = json.included || [];
+        const json = await res.json();
+        const noticias: Noticia[] = json.data || [];
+        const ficheirosIncluidos: ImagemAtributos[] = json.included || [];
 
-    return (
-        <main className="bg-gray-900 min-h-screen">
-            <h1 className="text-5xl font-bold mb-8 text-white text-center pt-10">Notícias</h1>
-            <div className="px-8 max-w-6xl mx-auto flex flex-wrap gap-8 justify-center">
+        return (
+            <main className="bg-gray-900 min-h-screen pb-20">
+                <h1 className="text-5xl font-bold mb-8 text-white text-center pt-10">Notícias</h1>
 
-                {/* =================== QUADRADO DE NOTÍCIA ===================*/}
-                <div className="px-8 max-w-6xl mx-auto mt-10 flex flex-wrap gap-8 justify-center">
+                <div className="px-8 max-w-6xl mx-auto">
+                    {noticias.length > 0 ? (
+                        <div className="flex flex-wrap gap-8 justify-center mt-10">
+                            {noticias.map((noticia) => {
+                                const imagemId = noticia.relationships?.field_imagem_post?.data?.id;
+                                const ficheiroImagem = ficheirosIncluidos.find(item => item.id === imagemId);
+                                const caminhoRelativo = ficheiroImagem?.attributes?.uri?.url;
 
-                    {noticias.map((noticia) => {
-                        // 3. LÓGICA DE CRUZAMENTO DE DADOS
-                        // Descobre o ID da imagem na notícia e procura o URL correspondente nos ficheiros incluídos
-                        const imagemId = noticia.relationships?.field_imagem_post?.data?.id;
-                        const ficheiroImagem = ficheirosIncluidos.find(item => item.id === imagemId);
-                        const caminhoRelativo = ficheiroImagem?.attributes?.uri?.url;
+                                let urlCompleto = null;
+                                if (caminhoRelativo) {
+                                    urlCompleto = caminhoRelativo.startsWith('http')
+                                        ? caminhoRelativo
+                                        : `${baseUrl}${caminhoRelativo}`;
+                                }
 
-                        // LÓGICA BLINDADA: Usa o env.local e verifica se o URL já tem domínio
-                        const baseUrl = process.env.NEXT_PUBLIC_DRUPAL_URL || 'https://admin.santaluziamoreira.pt';
-                        let urlCompleto = null;
-                        if (caminhoRelativo) {
-                            urlCompleto = caminhoRelativo.startsWith('http') 
-                                ? caminhoRelativo 
-                                : `${baseUrl}${caminhoRelativo}`;
-                        }
+                                return (
+                                    <div key={noticia.id} className="w-80 bg-gray-800 rounded-2xl shadow-xl overflow-hidden border border-gray-700 group cursor-pointer transition-all hover:scale-105">
 
-                        return (
-                            <div key={noticia.id} className="w-80 bg-gray-800 rounded-2xl shadow-xl overflow-hidden border border-gray-700 group cursor-pointer transition-all hover:scale-105">
+                                        <div className="relative aspect-[16/9] w-full bg-gray-700 border-b border-gray-600 flex flex-col items-center justify-center font-bold text-gray-400 text-sm group-hover:opacity-90 transition">
+                                            {urlCompleto ? (
+                                                <Image
+                                                    src={urlCompleto}
+                                                    alt={noticia.attributes.title}
+                                                    fill
+                                                    className="object-cover"
+                                                />
+                                            ) : (
+                                                <span className="text-xs font-normal">Sem Imagem</span>
+                                            )}
+                                        </div>
 
-                                {/* IMAGEM COM NEXT/IMAGE */}
-                                {/* Nota: A div tem de ter a classe 'relative' para o Image com 'fill' funcionar bem */}
-                                <div className="relative aspect-[16/9] w-full bg-gray-700 border-b border-gray-600 flex flex-col items-center justify-center font-bold text-gray-400 text-sm group-hover:opacity-90 transition">
-                                    {urlCompleto ? (
-                                        <Image
-                                            src={urlCompleto}
-                                            alt={noticia.attributes.title}
-                                            fill
-                                            className="object-cover"
-                                        />
-                                    ) : (
-                                        <span className="text-xs font-normal">Sem Imagem</span>
-                                    )}
-                                </div>
+                                        <div className="p-6 space-y-3">
+                                            <div className="text-xs text-pink-400 font-bold">
+                                                {new Date(noticia.attributes.created).toLocaleDateString('pt-PT')}
+                                            </div>
 
-                                {/* PARTE DE BAIXO: Conteúdo da Notícia */}
-                                <div className="p-6 space-y-3">
+                                            <div className="space-y-2">
+                                                <h2 className="text-xl font-bold text-white line-clamp-2">
+                                                    {noticia.attributes.title}
+                                                </h2>
+                                            </div>
 
-                                    {/* DATA */}
-                                    <div className="text-xs text-pink-400 font-bold">
-                                        {new Date(noticia.attributes.created).toLocaleDateString('pt-PT')}
+                                            <div className="text-sm text-gray-400 line-clamp-3 pt-2">
+                                                {noticia.attributes.body?.processed ? parse(noticia.attributes.body.processed) : 'Sem conteúdo'}
+                                            </div>
+                                        </div>
                                     </div>
-
-                                    {/* TÍTULO */}
-                                    <div className="space-y-2">
-                                        <h2 className="text-xl font-bold text-white line-clamp-2">
-                                            {noticia.attributes.title}
-                                        </h2>
-                                    </div>
-
-                                    {/* CORPO DA NOTÍCIA */}
-                                    <div className="text-sm text-gray-400 line-clamp-3 pt-2">
-                                        {noticia.attributes.body ? parse(noticia.attributes.body.processed) : 'Sem conteúdo'}
-                                    </div>
-
-                                </div>
-                            </div>
-                        );
-                    })}
+                                );
+                            })}
+                        </div>
+                    ) : (
+                        <div className="text-gray-400 text-center py-20 font-bold text-lg">
+                            Sem notícias publicadas no momento.
+                        </div>
+                    )}
                 </div>
-            </div>
-        </main>
-    );
+            </main>
+        );
+    } catch (error) {
+        console.error("Falha ao ligar ao servidor nas notícias:", error);
+        return <div className="text-white text-center py-20 font-bold">Falha de ligação ao servidor. Tente novamente.</div>;
+    }
 }

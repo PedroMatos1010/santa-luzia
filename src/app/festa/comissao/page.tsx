@@ -11,13 +11,13 @@ type Membro = {
 export default async function ComissaoPage() {
   // Fetch members from Drupal JSON:API
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_DRUPAL_URL}/jsonapi/node/comissao?include=field_imagem`,
+    `${process.env.NEXT_PUBLIC_DRUPAL_URL}/jsonapi/node/comissao?include=field_imagem&sort=field_ordem`,
     { cache: 'no-store' }
   );
 
   if (!res.ok) {
     return (
-      <main className="text-center text-red-500">
+      <main className="text-center text-red-500 py-20">
         <h1>Erro ao carregar os dados da comissão.</h1>
       </main>
     );
@@ -47,22 +47,25 @@ export default async function ComissaoPage() {
   });
 
   return (
-    <main>
-      <div className="max-w-5xl mx-auto">
+    <main className="py-20">
+      {/* 1. Redução da largura máxima para aproximar os pares */}
+      <div className="max-w-4xl mx-auto px-8">
         
-        <div className="text-center mb-16">
+        <div className="text-center mb-24">
            <h1 className="text-5xl md:text-6xl font-extrabold text-gray-900 mb-6 tracking-tight">
             Comissão de Festas 
           </h1>
           <div className="w-24 h-1 bg-blue-600 mx-auto rounded-full"></div>
-          <p className="text-gray-500 text-lg">Conhece a equipa que torna tudo possível.</p>
+          <p className="text-gray-500 text-lg mt-6">Conhece a equipa que torna tudo possível.</p>
         </div>
 
-        {/* GRID DE MEMBROS */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
+        {/* 2. GRID DE MEMBROS - Agora 2 a 2 com espaçamentos lógicos */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-24 justify-items-center">
           {membros.map((membro) => (
-            <div key={membro.id} className="group text-center">
-              <div className="relative w-48 h-48 mx-auto mb-6 rounded-full overflow-hidden border-4 border-gray-100 shadow-lg group-hover:border-blue-500 transition-all duration-300">
+            <div key={membro.id} className="group text-center w-full max-w-xs">
+              
+              {/* 3. Aumento ligeiro do tamanho das fotos (w-56 h-56) */}
+              <div className="relative w-56 h-56 mx-auto mb-6 rounded-full overflow-hidden border-4 border-gray-100 shadow-lg group-hover:border-blue-500 transition-all duration-300">
                 {membro.foto ? (
                   <Image
                     src={membro.foto}
@@ -77,14 +80,14 @@ export default async function ComissaoPage() {
                   </div>
                 )}
               </div>
-              <h3 className="text-xl font-bold text-gray-900">{membro.nome}</h3>
-              <p className="text-blue-600 font-medium mt-1">{membro.cargo}</p>
+              <h3 className="text-2xl font-bold text-gray-900">{membro.nome}</h3>
+              <p className="text-blue-600 font-medium mt-2">{membro.cargo}</p>
             </div>
           ))}
         </div>
 
         {/* MENSAGEM FINAL */}
-        <div className="mt-20 p-10 bg-gray-50 rounded-2xl border border-gray-100 text-center">
+        <div className="mt-32 p-10 bg-gray-50 rounded-3xl border border-gray-100 text-center">
           <h4 className="text-2xl font-bold text-gray-900 mb-4">Queres falar connosco?</h4>
           <p className="text-gray-600">Estamos sempre disponíveis para parcerias e sugestões.</p>
           <button className="mt-6 bg-gray-900 text-white py-3 px-8 rounded-full font-bold hover:bg-gray-700 transition">

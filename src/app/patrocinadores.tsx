@@ -37,60 +37,88 @@ export default async function Patrocinadores() {
         cache: 'no-store'
     });
 
-    if (!res.ok) {
-        return null;
-    }
+    // Se a API falhar, não escondemos a secção. 
+    // Assumimos que não há dados e mostramos a caixa de apelo.
+    let patrocinadores: Patrocinador[] = [];
+    let ficheirosIncluidos: ImagemAtributos[] = [];
 
-    const json = await res.json();
-    const patrocinadores: Patrocinador[] = json.data;
-    const ficheirosIncluidos: ImagemAtributos[] = json.included || [];
-
-    if (!patrocinadores || patrocinadores.length === 0) {
-        return null;
+    if (res.ok) {
+        const json = await res.json();
+        patrocinadores = json.data || [];
+        ficheirosIncluidos = json.included || [];
     }
 
     return (
         <div className="w-full bg-white border-y border-gray-200 mt-4 py-16 shadow-sm">
             <div className="max-w-6xl mx-auto px-8">
                 
-                <div className="flex flex-wrap justify-center items-center gap-12 md:gap-20">
+                <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-12 tracking-tight text-center">
+                    Patrocinadores
+                </h2>
+
+                {patrocinadores.length === 0 ? (
                     
-                    {patrocinadores.map((patrocinador) => {
-                        const imagemId = patrocinador.relationships?.field_imagem?.data?.id;
-                        const ficheiroImagem = ficheirosIncluidos.find(item => item.id === imagemId);
-                        const caminhoRelativo = ficheiroImagem?.attributes?.uri?.url;
-                        
-                        let urlImagem = null;
-                        if (caminhoRelativo) {
-                            urlImagem = caminhoRelativo.startsWith('http') 
-                                ? caminhoRelativo 
-                                : `${baseUrl}${caminhoRelativo}`;
-                        }
+                    // ESTADO VAZIO: O APELO PARA NOVOS PATROCINADORES
+                    <div className="bg-gray-50 border border-gray-100 rounded-3xl p-10 md:p-16 text-center shadow-lg shadow-gray-200/50 max-w-3xl mx-auto">
+                        <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                            </svg>
+                        </div>
+                        <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">Seja um Patrocinador!</h3>
+                        <p className="text-gray-600 mb-8 max-w-2xl mx-auto text-lg">
+                            Festa de Santa Luzia é feita pela comunidade e para a comunidade. Associe a sua empresa às nossas raízes, ganhe visibilidade e ajude-nos a criar um evento inesquecível. Sem o apoio do comércio local, nada disto seria possível!
+                        </p>
+                        <Link 
+                            href="/como-ajudar/patrocinios" 
+                            className="inline-block bg-blue-600 text-white px-8 py-4 rounded-full font-bold hover:bg-blue-700 hover:shadow-md transition-all duration-300"
+                        >
+                            Quero ser Patrocinador
+                        </Link>
+                    </div>
 
-                        if (!urlImagem) return null;
+                ) : (
 
-                        // Se o patrocinador não tiver link no Drupal, usamos '#' como fallback
-                        const urlDestino = patrocinador.attributes.field_link?.uri || '#';
+                    // ESTADO COM DADOS: LISTA DE LOGÓTIPOS
+                    <div className="flex flex-wrap justify-center items-center gap-12 md:gap-20">
+                        {patrocinadores.map((patrocinador) => {
+                            const imagemId = patrocinador.relationships?.field_imagem?.data?.id;
+                            const ficheiroImagem = ficheirosIncluidos.find(item => item.id === imagemId);
+                            const caminhoRelativo = ficheiroImagem?.attributes?.uri?.url;
+                            
+                            let urlImagem = null;
+                            if (caminhoRelativo) {
+                                urlImagem = caminhoRelativo.startsWith('http') 
+                                    ? caminhoRelativo 
+                                    : `${baseUrl}${caminhoRelativo}`;
+                            }
 
-                        return (
-                            <Link
-                                href={urlDestino}
-                                key={patrocinador.id} 
-                                target="_blank" // Abre num novo separador
-                                rel="noopener noreferrer" // Segurança extra ao abrir links externos
-                                className="relative w-32 h-20 md:w-48 md:h-28 grayscale hover:grayscale-0 opacity-60 hover:opacity-100 transition-all duration-500 block"
-                            >
-                                <Image
-                                    src={urlImagem}
-                                    alt={patrocinador.attributes.title} 
-                                    fill
-                                    className="object-contain" 
-                                />
-                            </Link>
-                        );
-                    })}
+                            if (!urlImagem) return null;
 
-                </div>
+                            // Se o patrocinador não tiver link no Drupal, usamos '#' como fallback
+                            const urlDestino = patrocinador.attributes.field_link?.uri || '#';
+
+                            return (
+                                <Link
+                                    href={urlDestino}
+                                    key={patrocinador.id} 
+                                    target="_blank" // Abre num novo separador
+                                    rel="noopener noreferrer" // Segurança extra ao abrir links externos
+                                    className="relative w-32 h-20 md:w-48 md:h-28 grayscale hover:grayscale-0 opacity-60 hover:opacity-100 transition-all duration-500 block"
+                                >
+                                    <Image
+                                        src={urlImagem}
+                                        alt={patrocinador.attributes.title} 
+                                        fill
+                                        className="object-contain" 
+                                    />
+                                </Link>
+                            );
+                        })}
+                    </div>
+
+                )}
+
             </div>
         </div>
     );
