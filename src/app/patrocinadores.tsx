@@ -52,9 +52,14 @@ export default async function Patrocinadores() {
         <div className="w-full bg-white border-y border-gray-200 mt-4 py-16 shadow-sm">
             <div className="max-w-6xl mx-auto px-8">
                 
-                <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-12 tracking-tight text-center">
-                    Patrocinadores
-                </h2>
+               <div className="max-w-6xl mx-auto relative z-10">
+                    <div className="flex flex-col items-center mb-16">
+                        <h2 className="text-5xl font-extrabold text-gray-900 tracking-tight mb-4">
+                        Patrocinadores
+                        </h2>
+                        <div className="w-24 h-1 bg-pink-500 rounded-full"></div>
+                    </div>
+                </div>
 
                 {patrocinadores.length === 0 ? (
                     
