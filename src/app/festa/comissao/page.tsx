@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 
 // Tipagem básica dos membros
 type Membro = {
@@ -9,13 +10,15 @@ type Membro = {
 };
 
 export default async function ComissaoPage() {
-  // Fetch members from Drupal JSON:API
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_DRUPAL_URL}/jsonapi/node/comissao?include=field_imagem&sort=field_ordem`,
+  const baseUrl = process.env.NEXT_PUBLIC_DRUPAL_URL || 'http://festa-santa-luzia-api.ddev.site';
+
+  // 1. LÓGICA PARA IR BUSCAR A COMISSÃO
+  const resComissao = await fetch(
+    `${baseUrl}/jsonapi/node/comissao?include=field_imagem&sort=field_ordem`,
     { cache: 'no-store' }
   );
 
-  if (!res.ok) {
+  if (!resComissao.ok) {
     return (
       <main className="text-center text-red-500 py-20">
         <h1>Erro ao carregar os dados da comissão.</h1>
@@ -23,19 +26,14 @@ export default async function ComissaoPage() {
     );
   }
 
-  const data = await res.json();
+  const dataComissao = await resComissao.json();
 
   // Mapear os dados da API para o nosso tipo Membro
-  const membros: Membro[] = data.data.map((item: any) => {
-    // Encontrar o ID da referência da imagem nas relações
+  const membros: Membro[] = dataComissao.data.map((item: any) => {
     const imageId = item.relationships?.field_imagem?.data?.id;
-    
-    // Encontrar o objeto real da imagem no array 'included'
-    const imageNode = data.included?.find((inc: any) => inc.id === imageId);
-    
-    // Construir o URL completo da imagem
+    const imageNode = dataComissao.included?.find((inc: any) => inc.id === imageId);
     const imageUrl = imageNode?.attributes?.uri?.url
-      ? `${process.env.NEXT_PUBLIC_DRUPAL_URL}${imageNode.attributes.uri.url}`
+      ? `${baseUrl}${imageNode.attributes.uri.url}`
       : null;
 
     return {
@@ -46,25 +44,41 @@ export default async function ComissaoPage() {
     };
   });
 
+  // 2. LÓGICA PARA IR BUSCAR O E-MAIL (Igual aos Contactos)
+  let emailDinamico = "geral@santaluzia.pt"; // Email de fallback
+  try {
+    const resEmail = await fetch(`${baseUrl}/jsonapi/node/site_settings`, {
+      cache: 'no-store'
+    });
+
+    if (resEmail.ok) {
+      const jsonEmail = await resEmail.json();
+      if (jsonEmail.data && jsonEmail.data.length > 0 && jsonEmail.data[0].attributes.field_email) {
+        emailDinamico = jsonEmail.data[0].attributes.field_email;
+      }
+    }
+  } catch (error) {
+    console.error("Erro ao carregar o e-mail:", error);
+  }
+
   return (
     <main className="py-20">
-      {/* 1. Redução da largura máxima para aproximar os pares */}
       <div className="max-w-4xl mx-auto px-8">
         
+        {/* CABEÇALHO */}
         <div className="text-center mb-24">
            <h1 className="text-5xl md:text-6xl font-extrabold text-gray-900 mb-6 tracking-tight">
-            Comissão de Festas 
+             Comissão de Festas 
           </h1>
           <div className="w-24 h-1 bg-blue-600 mx-auto rounded-full"></div>
           <p className="text-gray-500 text-lg mt-6">Conhece a equipa que torna tudo possível.</p>
         </div>
 
-        {/* 2. GRID DE MEMBROS - Agora 2 a 2 com espaçamentos lógicos */}
+        {/* GRID DE MEMBROS */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-24 justify-items-center">
           {membros.map((membro) => (
             <div key={membro.id} className="group text-center w-full max-w-xs">
               
-              {/* 3. Aumento ligeiro do tamanho das fotos (w-56 h-56) */}
               <div className="relative w-56 h-56 mx-auto mb-6 rounded-full overflow-hidden border-4 border-gray-100 shadow-lg group-hover:border-blue-500 transition-all duration-300">
                 {membro.foto ? (
                   <Image
@@ -74,7 +88,6 @@ export default async function ComissaoPage() {
                     className="object-cover"
                   />
                 ) : (
-                  // Fallback se nenhuma imagem for fornecida no Drupal
                   <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-400 font-bold">
                     FOTO
                   </div>
@@ -86,13 +99,18 @@ export default async function ComissaoPage() {
           ))}
         </div>
 
-        {/* MENSAGEM FINAL */}
+        {/* MENSAGEM FINAL COM BOTÃO DE E-MAIL DINÂMICO */}
         <div className="mt-32 p-10 bg-gray-50 rounded-3xl border border-gray-100 text-center">
           <h4 className="text-2xl font-bold text-gray-900 mb-4">Queres falar connosco?</h4>
           <p className="text-gray-600">Estamos sempre disponíveis para parcerias e sugestões.</p>
-          <button className="mt-6 bg-gray-900 text-white py-3 px-8 rounded-full font-bold hover:bg-gray-700 transition">
+          
+          {/* Troca do <button> para a tag <a> com mailto */}
+          <a 
+            href={`mailto:${emailDinamico}`}
+            className="inline-block mt-6 bg-gray-900 text-white py-3 px-8 rounded-full font-bold hover:bg-gray-700 transition"
+          >
             Enviar E-mail
-          </button>
+          </a>
         </div>
 
       </div>
