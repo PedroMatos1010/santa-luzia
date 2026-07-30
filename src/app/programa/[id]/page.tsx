@@ -7,8 +7,7 @@ type EventoDetalhe = {
         title: string;
         field_data?: string;
         field_local?: string;
-        // Se tiveres um campo de descrição longa (body) no teu Tipo de Conteúdo do Drupal:
-        body?: {
+        field_descricao?: {
             value: string;
         };
     };
@@ -30,12 +29,14 @@ type ImagemAtributos = {
     };
 };
 
-// O Next.js injeta automaticamente os parâmetros do URL em 'params'
-export default async function DynamicProgramaDetalhes({ params }: { params: { id: string } }) {
-    const { id } = params;
+export default async function DynamicProgramaDetalhes({ params }: { params: Promise<{ id: string }> }) {
+    
+    // Resolvemos a Promise ANTES de extrair o ID
+    const resolvedParams = await params;
+    const id = resolvedParams.id;
+    
     const baseUrl = process.env.NEXT_PUBLIC_DRUPAL_URL || 'https://admin.santaluziamoreira.pt';
     
-    // Pedido ao Drupal para trazer apenas o nó com este UUID específico
     const res = await fetch(`${baseUrl}/jsonapi/node/evento/${id}?include=field_imagem`, {
         cache: 'no-store'
     });
@@ -80,7 +81,7 @@ export default async function DynamicProgramaDetalhes({ params }: { params: { id
                 {/* BOTÃO VOLTAR ATRÁS */}
                 <Link 
                     href="/programa" 
-                    className="inline-flex items-center gap-2 text-sm font-bold text-gray-600 hover:text-pink-600 mb-8 transition-colors group"
+                    className="inline-flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-pink-600 mb-8 transition-colors group"
                 >
                     <svg className="w-4 h-4 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7"></path>
@@ -88,11 +89,11 @@ export default async function DynamicProgramaDetalhes({ params }: { params: { id
                     Voltar ao Programa
                 </Link>
 
-                {/* CARTÃO PRINCIPAL DE DETALHES */}
-                <div className="bg-gray-900 rounded-3xl overflow-hidden shadow-2xl border border-gray-800">
+                {/* CARTÃO PRINCIPAL DE DETALHES (TEMA CLARO) */}
+                <div className="bg-white rounded-3xl overflow-hidden shadow-xl border border-gray-100">
                     
                     {/* ÁREA DA FOTO GIGANTE */}
-                    <div className="relative w-full h-96 bg-gray-800">
+                    <div className="relative w-full h-96 bg-gray-100">
                         {urlImagem ? (
                             <Image 
                                 src={urlImagem} 
@@ -102,29 +103,30 @@ export default async function DynamicProgramaDetalhes({ params }: { params: { id
                                 priority // Carrega a imagem imediatamente por ser o topo da página
                             />
                         ) : (
-                            <div className="w-full h-full flex items-center justify-center text-gray-600 font-bold uppercase tracking-widest">
+                            <div className="w-full h-full flex items-center justify-center text-gray-400 font-bold uppercase tracking-widest">
                                 Sem Imagem Disponível
                             </div>
                         )}
-                        <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent"></div>
+                        {/* Gradiente sutil para garantir que a imagem se funde bem */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
                     </div>
 
                     {/* CONTEÚDO E INFORMAÇÕES */}
-                    <div className="p-8 md:p-12 -mt-12 relative z-10">
+                    <div className="p-8 md:p-12 -mt-10 relative z-10 bg-white rounded-t-3xl">
                         
                         {/* DATA EXTENSA */}
-                        <span className="text-pink-500 font-black tracking-widest text-sm uppercase block mb-3 drop-shadow-sm">
+                        <span className="text-pink-600 font-black tracking-widest text-sm uppercase block mb-3">
                             {dataX}
                         </span>
 
                         {/* TÍTULO PRINCIPAL */}
-                        <h1 className="text-4xl md:text-5xl font-black text-white mb-8 tracking-tight leading-tight">
+                        <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-8 tracking-tight leading-tight">
                             {evento.attributes.title}
                         </h1>
 
                         {/* ETIQUETAS RÁPIDAS (LOCAL E HORA) */}
-                        <div className="flex flex-wrap gap-4 mb-10 pb-8 border-b border-gray-800">
-                            <div className="bg-gray-800 text-gray-200 px-5 py-3 rounded-xl font-bold flex items-center gap-3 border border-gray-700 shadow-md">
+                        <div className="flex flex-wrap gap-4 mb-10 pb-8 border-b border-gray-100">
+                            <div className="bg-gray-50 text-gray-700 px-5 py-3 rounded-xl font-bold flex items-center gap-3 border border-gray-200 shadow-sm">
                                 <svg className="w-5 h-5 text-pink-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.243-4.243a8 8 0 1111.314 0z"></path>
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
@@ -132,7 +134,7 @@ export default async function DynamicProgramaDetalhes({ params }: { params: { id
                                 {evento.attributes.field_local || "Local a definir"}
                             </div>
 
-                            <div className="bg-gray-800 text-gray-200 px-5 py-3 rounded-xl font-bold flex items-center gap-3 border border-gray-700 shadow-md">
+                            <div className="bg-gray-50 text-gray-700 px-5 py-3 rounded-xl font-bold flex items-center gap-3 border border-gray-200 shadow-sm">
                                 <svg className="w-5 h-5 text-pink-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                 </svg>
@@ -141,15 +143,15 @@ export default async function DynamicProgramaDetalhes({ params }: { params: { id
                         </div>
 
                         {/* DESCRIÇÃO DETALHADA */}
-                        <div className="prose prose-invert max-w-none">
+                        <div className="prose prose-lg max-w-none text-gray-600">
                             <h3 className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-4">Sobre o Evento</h3>
-                            {evento.attributes.body?.value ? (
+                            {evento.attributes.field_descricao ? (
                                 <div 
-                                    className="text-gray-300 text-lg leading-relaxed space-y-4"
-                                    dangerouslySetInnerHTML={{ __html: evento.attributes.body.value }}
+                                    className="text-gray-700 text-lg leading-relaxed space-y-4"
+                                    dangerouslySetInnerHTML={{ __html: evento.attributes.field_descricao }}
                                 />
                             ) : (
-                                <p className="text-gray-500 italic text-lg">Não existem detalhes adicionais para este evento.</p>
+                                <p className="text-gray-400 italic text-lg">Não existem detalhes adicionais para este evento.</p>
                             )}
                         </div>
                     </div>

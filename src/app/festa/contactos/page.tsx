@@ -110,7 +110,7 @@ export default async function ContactosPage() {
                         </div>
                         <div>
                             <h2 className="text-xl font-bold text-gray-900 mb-2">Localização</h2>
-                            <p className="text-gray-600 mb-2">Capela de Santa Luzia, Moreira de Cónegos</p>
+                            <p className="text-gray-600 mb-2">local da festa</p>
                             <span className="text-red-600 font-bold">Ver no Mapa &rarr;</span>
                         </div>
                     </a>
