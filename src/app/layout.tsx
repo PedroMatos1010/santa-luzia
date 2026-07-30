@@ -147,13 +147,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
             {/* DIREITA: Botões Institucionais */}
             <div className="flex gap-6 items-center justify-center">
-              <Link href="https://jfmoreiradeconegos.pt" className="bg-transparent border-transparent hover:bg-white/10 rounded-lg p-2 transition cursor-pointer">
-                <Image src="/moreiradeconegos.png" alt="Junta de Freguesia de Moreira de Cónegos" width={100} height={30} className="object-contain" />
-              </Link>
-              <Link href="https://www.cm-guimaraes.pt" className="bg-transparent border-transparent hover:bg-white/10 rounded-lg p-2 transition cursor-pointer">
-                <Image src="/guimaraeslogo.png" alt="Câmara Municipal de Guimarães" width={100} height={30} className="object-contain" />
-              </Link>
-            </div>
+  <Link href="https://jfmoreiradeconegos.pt" className="bg-transparent border-transparent hover:bg-white/10 rounded-lg p-2 transition cursor-pointer">
+    <Image src="/moreiradeconegos.png" alt="Junta de Freguesia de Moreira de Cónegos" width={100} height={30} className="object-contain" />
+  </Link>
+  
+  {/* <Link href="https://www.cm-guimaraes.pt" className="bg-transparent border-transparent hover:bg-white/10 rounded-lg p-2 transition cursor-pointer">
+    <Image src="/guimaraeslogo.png" alt="Câmara Municipal de Guimarães" width={100} height={30} className="object-contain" />
+  </Link> */}
+</div>
           </div>
         </footer>
       </body>
