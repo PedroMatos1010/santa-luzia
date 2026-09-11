@@ -1,5 +1,6 @@
 import parse from 'html-react-parser';
 import Image from 'next/image';
+import Link from 'next/link'; // Adicionado o import do Link
 
 type ImagemAtributos = {
     id: string;
@@ -67,8 +68,12 @@ export default async function Home() {
                                 }
 
                                 return (
-                                    <div key={noticia.id} className="w-80 bg-gray-800 rounded-2xl shadow-xl overflow-hidden border border-gray-700 group cursor-pointer transition-all hover:scale-105">
-
+                                    // A <div> foi substituída pelo <Link> com o respetivo href dinâmico
+                                    <Link 
+                                        key={noticia.id} 
+                                        href={`/noticias/${noticia.id}`}
+                                        className="w-80 bg-gray-800 rounded-2xl shadow-xl overflow-hidden border border-gray-700 group cursor-pointer transition-all hover:scale-105 block"
+                                    >
                                         <div className="relative aspect-[16/9] w-full bg-gray-700 border-b border-gray-600 flex flex-col items-center justify-center font-bold text-gray-400 text-sm group-hover:opacity-90 transition">
                                             {urlCompleto ? (
                                                 <Image
@@ -97,7 +102,7 @@ export default async function Home() {
                                                 {noticia.attributes.body?.processed ? parse(noticia.attributes.body.processed) : 'Sem conteúdo'}
                                             </div>
                                         </div>
-                                    </div>
+                                    </Link>
                                 );
                             })}
                         </div>

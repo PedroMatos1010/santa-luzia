@@ -1,21 +1,21 @@
 import Link from 'next/link';
 
-// Atualização: Nas versões modernas do Next.js, o params tem de ser tratado como Promise
 export default async function DetalheNoticia({ params }: { params: Promise<{ id: string }> }) {
     
     // 1. Esperar que o Next.js leia o ID do URL com sucesso
     const resolvedParams = await params;
     const noticiaId = resolvedParams.id;
     
-    // 2. Construir o URL exato
-    const urlFetch = `https://admin.santaluziamoreira.pt/jsonapi/node/post/${noticiaId}`;
+    // 2. Construir o URL de forma dinâmica usando a variável de ambiente!
+    const baseUrl = process.env.NEXT_PUBLIC_DRUPAL_URL;
+    const urlFetch = `${baseUrl}/jsonapi/node/post/${noticiaId}`;
 
     // 3. Fazer o pedido ao Drupal
     const res = await fetch(urlFetch, {
         cache: 'no-store'
     });
 
-    // 4. O SISTEMA DE DEBUG VISUAL (Mostra o erro no ecrã em vez de esconder)
+    // 4. O SISTEMA DE DEBUG VISUAL
     if (!res.ok) {
         return (
             <div className="min-h-screen bg-gray-900 flex flex-col items-center justify-center text-white p-8 text-center">
@@ -32,8 +32,8 @@ export default async function DetalheNoticia({ params }: { params: Promise<{ id:
                     </code>
                 </div>
 
-                <Link href="/" className="text-blue-400 hover:text-blue-300 transition font-bold text-lg">
-                    &larr; Voltar à página inicial
+                <Link href="/noticias" className="text-blue-400 hover:text-blue-300 transition font-bold text-lg">
+                    &larr; Voltar à página de notícias
                 </Link>
             </div>
         );
@@ -47,8 +47,8 @@ export default async function DetalheNoticia({ params }: { params: Promise<{ id:
         <main className="bg-gray-100 min-h-screen pt-20 pb-16">
             <div className="max-w-4xl mx-auto px-8 bg-white p-12 rounded-xl shadow-xl">
                 
-                <Link href="/" className="text-blue-600 font-bold hover:underline mb-8 inline-block">
-                    &larr; Voltar à página inicial
+                <Link href="/noticias" className="text-blue-600 font-bold hover:underline mb-8 inline-block">
+                    &larr; Voltar às Notícias
                 </Link>
 
                 <h1 className="text-5xl font-bold text-gray-900 mb-6">
