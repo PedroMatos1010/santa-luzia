@@ -1,21 +1,20 @@
 import Link from 'next/link';
+import parse from 'html-react-parser'; // Adicionei isto caso tenhas tags HTML no texto
 
 export default async function DetalheNoticia({ params }: { params: Promise<{ id: string }> }) {
     
-    // 1. Esperar que o Next.js leia o ID do URL com sucesso
     const resolvedParams = await params;
     const noticiaId = resolvedParams.id;
     
-    // 2. Construir o URL de forma dinâmica usando a variável de ambiente!
     const baseUrl = process.env.NEXT_PUBLIC_DRUPAL_URL;
-    const urlFetch = `${baseUrl}/jsonapi/node/post/${noticiaId}`;
+    
+    // MUDANÇA 1: Adicionámos o ?include=uid para pedir os dados do autor ao Drupal
+    const urlFetch = `${baseUrl}/jsonapi/node/post/${noticiaId}?include=uid`;
 
-    // 3. Fazer o pedido ao Drupal
     const res = await fetch(urlFetch, {
         cache: 'no-store'
     });
 
-    // 4. O SISTEMA DE DEBUG VISUAL
     if (!res.ok) {
         return (
             <div className="min-h-screen bg-gray-900 flex flex-col items-center justify-center text-white p-8 text-center">
@@ -25,10 +24,6 @@ export default async function DetalheNoticia({ params }: { params: Promise<{ id:
                     <p className="text-gray-400 mb-2">O Next.js tentou aceder a este URL:</p>
                     <code className="text-yellow-400 break-all text-sm block mb-4">
                         {urlFetch}
-                    </code>
-                    <p className="text-gray-400 mb-2">Resposta do Drupal:</p>
-                    <code className="text-red-400 block font-bold">
-                        {res.statusText}
                     </code>
                 </div>
 
@@ -41,8 +36,15 @@ export default async function DetalheNoticia({ params }: { params: Promise<{ id:
 
     const json = await res.json();
     const noticia = json.data;
+    const ficheirosIncluidos = json.included || [];
 
-    // 5. SE TUDO CORRER BEM, DESENHA A NOTÍCIA
+    // MUDANÇA 2: Procurar o autor nos ficheiros incluídos
+    const autorId = noticia.relationships?.uid?.data?.id;
+    const autorObj = ficheirosIncluidos.find((item: any) => item.id === autorId && item.type.startsWith('user'));
+    
+    // No Drupal, o nome de utilizador costuma estar no "name" ou "display_name"
+    const nomeAutor = autorObj?.attributes?.display_name || autorObj?.attributes?.name || 'Comissão de Festas';
+
     return (
         <main className="bg-gray-100 min-h-screen pt-20 pb-16">
             <div className="max-w-4xl mx-auto px-8 bg-white p-12 rounded-xl shadow-xl">
@@ -55,11 +57,13 @@ export default async function DetalheNoticia({ params }: { params: Promise<{ id:
                     {noticia.attributes.title}
                 </h1>
                 
-                <p className="text-gray-500 mb-10 border-b pb-6">
-                    Publicado a: {new Date(noticia.attributes.created).toLocaleDateString('pt-PT')}
+                {/* MUDANÇA 3: Mostrar o Autor junto da data */}
+                <p className="text-gray-500 mb-10 border-b pb-6 flex items-center gap-2">
+                    <span>Publicado a: {new Date(noticia.attributes.created).toLocaleDateString('pt-PT')}</span>
+                    <span className="text-gray-300">|</span>
+                    <span className="font-semibold text-gray-700">Por {nomeAutor}</span>
                 </p>
 
-                {/* O CONTEÚDO REAL DA NOTÍCIA VEM AQUI */}
                 {noticia.attributes.body?.processed ? (
                     <div 
                         className="text-gray-700 text-lg leading-relaxed prose max-w-none"
