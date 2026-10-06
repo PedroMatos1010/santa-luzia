@@ -168,22 +168,16 @@ export default async function DynamicProgramaDetalhes({ params }: { params: Prom
         );
 
     } catch (error: any) {
-        // 4. CATCH: Previne ecrãs pretos se o fetch falhar
-        return (
-            <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center py-20 px-6 text-center">
-                <h2 className="text-3xl font-bold text-red-600 mb-4">Falha de Ligação ao Servidor</h2>
-                
-                <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200 max-w-2xl mb-8 text-left inline-block">
-                    <p className="text-gray-500 mb-2 font-semibold">A tentar aceder a:</p>
-                    <code className="text-pink-600 break-all text-sm block mb-4">{urlFetch}</code>
-                    
-                    <p className="text-gray-500 mb-2 font-semibold">Erro interno do Next.js:</p>
-                    <code className="text-red-500 break-all text-sm block">{error.message || 'Erro de rede ou certificado inválido'}</code>
-                </div>
+        // PARAR E REGISTAR O ERRO
+        console.error("============= ALARME =============");
+        console.error("O fetch falhou com este erro exato:", error);
+        console.error("URL tentado:", urlFetch);
+        console.error("==================================");
 
-                <Link href="/programa" className="text-pink-600 font-bold hover:underline text-lg">
-                    &larr; Voltar ao Programa
-                </Link>
+        return (
+            <div className="min-h-screen bg-gray-900 flex flex-col items-center justify-center p-8 text-center">
+                <h2 className="text-3xl font-bold text-red-500 mb-4">Falha de Rede no Servidor</h2>
+                <code className="text-red-400 block">{error.message}</code>
             </div>
         );
     }

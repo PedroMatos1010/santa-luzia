@@ -4,6 +4,9 @@ import Logo from "./logo";
 import Link from "next/link";
 import Image from "next/image";
 
+// Esta linha é crucial: diz ao Next.js que este ficheiro deve ser sempre renderizado no servidor e nunca em cache estático
+export const dynamic = "force-dynamic";
+
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   // 1. Rota de base dinâmica com fallback garantido para o DDEV
   const baseUrl = process.env.NEXT_PUBLIC_DRUPAL_URL || 'https://admin.santaluziamoreira.pt';
@@ -29,7 +32,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       console.error(`Erro na API de Email: O Drupal respondeu com ${res.status}`);
     }
   } catch (error) {
-    console.error("Falha crítica ao tentar contactar o DDEV no Layout:", error);
+    console.error("Falha ao carregar o email no Layout, mas o site vai continuar a funcionar:", error);
   }
 
   return (
@@ -147,14 +150,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
             {/* DIREITA: Botões Institucionais */}
             <div className="flex gap-6 items-center justify-center">
-  <Link href="https://jfmoreiradeconegos.pt" className="bg-transparent border-transparent hover:bg-white/10 rounded-lg p-2 transition cursor-pointer">
-    <Image src="/moreiradeconegos.png" alt="Junta de Freguesia de Moreira de Cónegos" width={100} height={30} className="object-contain" />
-  </Link>
-  
-  <Link href="https://www.cm-guimaraes.pt" className="bg-transparent border-transparent hover:bg-white/10 rounded-lg p-2 transition cursor-pointer">
-    <Image src="/guimaraeslogo.png" alt="Câmara Municipal de Guimarães" width={100} height={30} className="object-contain" />
-  </Link>
-</div>
+              <Link href="https://jfmoreiradeconegos.pt" className="bg-transparent border-transparent hover:bg-white/10 rounded-lg p-2 transition cursor-pointer">
+                <Image src="/moreiradeconegos.png" alt="Junta de Freguesia de Moreira de Cónegos" width={100} height={30} className="object-contain" />
+              </Link>
+              
+              <Link href="https://www.cm-guimaraes.pt" className="bg-transparent border-transparent hover:bg-white/10 rounded-lg p-2 transition cursor-pointer">
+                <Image src="/guimaraeslogo.png" alt="Câmara Municipal de Guimarães" width={100} height={30} className="object-contain" />
+              </Link>
+            </div>
           </div>
         </footer>
       </body>

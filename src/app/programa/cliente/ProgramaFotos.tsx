@@ -22,25 +22,32 @@ type Evento = {
 };
 
 export default function ProgramaFotos({ 
-    evento, 
-    incluidos, 
-    proximoEvento 
+    // Injetamos um array vazio por defeito para garantir que nunca é undefined
+    evento = [], 
+    incluidos = [], 
+    proximoEvento = null 
 }: { 
-    evento: Evento[], 
-    incluidos: any[], 
-    proximoEvento: Evento | null 
+    evento?: Evento[], 
+    incluidos?: any[], 
+    proximoEvento?: Evento | null 
 }) {
     const [pesquisa, setPesquisa] = useState('');
 
-    // FILTRAR A LISTA PELA PESQUISA
-    const eventosFiltrados = evento.filter(ev => 
-        ev.attributes.title?.toLowerCase().includes(pesquisa.toLowerCase())
-    );
+    // Garantimos que evento é sempre um array antes de filtrar
+    const listaEventos = Array.isArray(evento) ? evento : [];
+    
+    // FILTRAR A LISTA PELA PESQUISA (Com proteção anti-crash)
+    const eventosFiltrados = listaEventos.filter(ev => {
+        const titulo = ev?.attributes?.title || ""; // Se não houver título, assume string vazia
+        return titulo.toLowerCase().includes(pesquisa.toLowerCase());
+    });
 
     // ============================================================================
     // FUNÇÃO AUXILIAR: DESENHAR O CARTÃO
     // ============================================================================
     const renderCartao = (item: Evento, isDestaque = false) => {
+        if (!item || !item.attributes) return null; // Proteção extra se o item vier corrompido
+
         const dataBruta = item.attributes.field_data;
         let dataX = "Data a definir";
         let horaY = "--:--";
@@ -53,14 +60,21 @@ export default function ProgramaFotos({
 
         let urlImagem = null;
         const imagemId = item.relationships?.field_imagem?.data?.id;
-        if (imagemId && incluidos) {
-            const ficheiro = incluidos.find((inc) => inc.id === imagemId);
-            const baseUrl = process.env.NEXT_PUBLIC_DRUPAL_URL || 'https://admin.santaluziamoreira.pt'; 
+        const listaIncluidos = Array.isArray(incluidos) ? incluidos : [];
+
+        if (imagemId && listaIncluidos.length > 0) {
+            const ficheiro = listaIncluidos.find((inc) => inc?.id === imagemId);
+            
+            // Limpa barras finais acidentais da variável de ambiente
+            const rawBaseUrl = process.env.NEXT_PUBLIC_DRUPAL_URL || 'https://admin.santaluziamoreira.pt'; 
+            const baseUrl = rawBaseUrl.replace(/\/$/, '');
             
             if (ficheiro?.attributes?.uri?.url) {
                 urlImagem = `${baseUrl}${ficheiro.attributes.uri.url}`;
             }
         }
+
+        const tituloSeguro = item.attributes.title || "Evento sem título";
 
         return (
             <Link 
@@ -81,7 +95,7 @@ export default function ProgramaFotos({
                     </div>
                     
                     <h3 className="text-3xl font-extrabold text-gray-900 mb-6 group-hover:text-pink-600 transition-colors">
-                        {item.attributes.title}
+                        {tituloSeguro}
                     </h3>
                     
                     <div className="flex flex-wrap gap-4 mt-auto">
@@ -103,7 +117,7 @@ export default function ProgramaFotos({
                 
                 <div className="relative w-full md:w-5/12 h-64 md:h-auto bg-gray-800 flex-shrink-0 overflow-hidden">
                     {urlImagem ? (
-                        <Image src={urlImagem} alt={item.attributes.title} fill className="object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out opacity-90 group-hover:opacity-100" />
+                        <Image src={urlImagem} alt={tituloSeguro} fill className="object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out opacity-90 group-hover:opacity-100" />
                     ) : (
                         <div className="w-full h-full flex items-center justify-center text-gray-600 text-xs font-bold uppercase tracking-widest">SEM FOTO</div>
                     )}
@@ -113,7 +127,6 @@ export default function ProgramaFotos({
         );
     };
 
-    // Variável ajustada para segurança no React Strict Mode
     let mesAtualRender = "";
 
     return (
