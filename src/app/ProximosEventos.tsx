@@ -100,7 +100,7 @@ export default async function ProximosEventos() {
                                 return (
                                     <Link 
                                         key={evento.id}
-                                        href={`/eventos/${evento.id}`}
+                                        href={`/programa/${evento.id}`}
                                         className="group flex flex-col bg-gray-800 rounded-2xl overflow-hidden shadow-2xl border border-gray-700 hover:border-pink-500/50 hover:-translate-y-2 transition-all duration-300 w-full max-w-sm"
                                     >
                                         {/* PARTE SUPERIOR: IMAGEM (Altura fixa h-52) */}
