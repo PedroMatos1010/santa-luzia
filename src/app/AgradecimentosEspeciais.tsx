@@ -1,12 +1,15 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
-// Tipagem para os dados do Drupal (Atualizada para campos de Link)
+// Tipagem para os dados do Drupal (com suporte para o Motivo)
 type Agradecimento = {
     id: string;
     attributes: {
         title: string; 
-        // O campo de link do Drupal vem como um objeto, não como uma simples string
+        // Suporta texto simples (string) ou caso tenhas escolhido texto formatado no Drupal
+        field_motivo?: string | { value?: string; processed?: string } | null;
+        field_descricao?: string | { value?: string; processed?: string } | null;
+        field_body?: string | { value?: string; processed?: string } | null;
         field_link?: {
             uri: string;
             title?: string;
@@ -30,22 +33,31 @@ type ImagemAtributos = {
     };
 };
 
+// Função auxiliar para extrair texto limpo do Drupal (seja string simples ou objeto)
+function extrairTexto(campo: any): string | null {
+    if (!campo) return null;
+    if (typeof campo === 'string') return campo;
+    if (typeof campo === 'object') return campo.processed || campo.value || null;
+    return null;
+}
+
 export default async function Agradecimentos() {
-    // 1. Limpa possíveis barras no final do URL de forma segura
+    // 1. Limpa possíveis barras no final do URL
     const rawBaseUrl = process.env.NEXT_PUBLIC_DRUPAL_URL || 'https://admin.santaluziamoreira.pt';
     const baseUrl = rawBaseUrl.replace(/\/$/, '');
     
-    // NOTA: Confirma no Drupal (Structure > Content types) se o machine name é mesmo 'agradecimentos'
-    const urlFetch = `${baseUrl}/jsonapi/node/agradecimentos?include=field_imagem&sort=created`;
+    const urlComImagem = `${baseUrl}/jsonapi/node/agradecimentos?include=field_imagem&sort=created`;
+    const urlSimples = `${baseUrl}/jsonapi/node/agradecimentos?sort=created`;
 
-    // 2. Escudo Try/Catch: Se o servidor falhar, esconde apenas a secção em vez de rebentar o site
     try {
-        const res = await fetch(urlFetch, {
-            cache: 'no-store'
-        });
+        let res = await fetch(urlComImagem, { cache: 'no-store' });
+
+        // Se o campo field_imagem não existir no Drupal, tenta ir buscar sem o include para não dar erro 400
+        if (res.status === 400) {
+            res = await fetch(urlSimples, { cache: 'no-store' });
+        }
 
         if (!res.ok) {
-            console.error(`Aviso: Falha ao carregar Agradecimentos (Status ${res.status}) em ${urlFetch}`);
             return null;
         }
 
@@ -53,94 +65,130 @@ export default async function Agradecimentos() {
         const agradecimentos: Agradecimento[] = json?.data || [];
         const ficheirosIncluidos: ImagemAtributos[] = json?.included || [];
 
-        if (agradecimentos.length === 0) {
-            return null;
-        }
-
         return (
             <section className="w-full bg-white border-y border-gray-200 mt-4 py-16 shadow-sm mb-10">
                 <div className="max-w-6xl mx-auto px-8">
 
                     <div className="max-w-6xl mx-auto relative z-10">
-                        <div className="flex flex-col items-center mb-16 text-center">
+                        <div className="flex flex-col items-center mb-12 text-center">
                             <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 tracking-tight mb-4">
                                 Agradecimentos Especiais
                             </h2>
-                            <div className="w-24 h-1 bg-pink-500 rounded-full"></div>
+                            <div className="w-24 h-1 bg-pink-500 rounded-full mb-4"></div>
+                            <p className="text-gray-500 max-w-2xl text-lg">
+                                O nosso sincero obrigado a todos os que contribuíram a título individual para tornar esta festa possível.
+                            </p>
                         </div>
                     </div>
                     
-                    <div className="flex flex-wrap justify-center items-center gap-12 md:gap-20">
-                        
-                        {agradecimentos.map((agradecimento) => {
-                            const imagemId = agradecimento.relationships?.field_imagem?.data?.id;
-                            const ficheiroImagem = ficheirosIncluidos.find(item => item.id === imagemId);
-                            const caminhoRelativo = ficheiroImagem?.attributes?.uri?.url;
+                    {agradecimentos.length === 0 ? (
+                        <div className="text-center py-8 bg-gray-50 rounded-2xl border border-dashed border-gray-200 max-w-xl mx-auto">
+                            <p className="text-gray-500 italic">
+                                Lista de agradecimentos em atualização.
+                            </p>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 justify-items-center">
                             
-                            let urlImagem = null;
-                            if (caminhoRelativo) {
-                                urlImagem = caminhoRelativo.startsWith('http') 
-                                    ? caminhoRelativo 
-                                    : `${baseUrl}${caminhoRelativo}`;
-                            }
+                            {agradecimentos.map((agradecimento) => {
+                                const nome = agradecimento.attributes.title;
+                                
+                                // Procura o motivo em field_motivo (ou field_descricao / field_body por prevenção)
+                                const motivo = extrairTexto(agradecimento.attributes.field_motivo) 
+                                            || extrairTexto(agradecimento.attributes.field_descricao)
+                                            || extrairTexto(agradecimento.attributes.field_body);
 
-                            if (!urlImagem) return null;
-                            
-                            // 3. Limpeza segura do campo Link do Drupal (remove prefixos internal: ou route:)
-                            const rawUri = agradecimento.attributes.field_link?.uri;
-                            let urlDestino = '#';
-                            
-                            if (rawUri) {
-                                urlDestino = rawUri
-                                    .replace(/^internal:/, '')
-                                    .replace(/^entity:/, '/');
-                            }
+                                const imagemId = agradecimento.relationships?.field_imagem?.data?.id;
+                                const ficheiroImagem = ficheirosIncluidos.find(item => item.id === imagemId);
+                                const caminhoRelativo = ficheiroImagem?.attributes?.uri?.url;
+                                
+                                let urlImagem = null;
+                                if (caminhoRelativo) {
+                                    urlImagem = caminhoRelativo.startsWith('http') 
+                                        ? caminhoRelativo 
+                                        : `${baseUrl}${caminhoRelativo}`;
+                                }
+                                
+                                // Limpeza do Link (se existir)
+                                const rawUri = agradecimento.attributes.field_link?.uri;
+                                let urlDestino = '#';
+                                if (rawUri) {
+                                    urlDestino = rawUri
+                                        .replace(/^internal:/, '')
+                                        .replace(/^entity:/, '/');
+                                }
+                                const temLinkValido = urlDestino !== '#' && urlDestino !== '' && !urlDestino.startsWith('route:');
 
-                            const temLinkValido = urlDestino !== '#' && urlDestino !== '' && !urlDestino.startsWith('route:');
+                                const inicial = nome ? nome.charAt(0).toUpperCase() : '★';
 
-                            const classeCartao = "relative w-32 h-20 md:w-48 md:h-28 grayscale hover:grayscale-0 opacity-60 hover:opacity-100 transition-all duration-500 block";
+                                // Desenho do Cartão: Topo (Imagem OU Avatar) + Base (Nome + Motivo por baixo)
+                                const conteudoCartao = (
+                                    <div className="w-full max-w-xs bg-gray-50 hover:bg-white border border-gray-200 hover:border-pink-300 rounded-3xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col items-center text-center group h-full justify-between">
+                                        
+                                        {/* PARTE DE CIMA: Imagem ou Inicial */}
+                                        <div className="mb-4 flex items-center justify-center w-full">
+                                            {urlImagem ? (
+                                                <div className="relative w-32 h-24 grayscale group-hover:grayscale-0 opacity-85 group-hover:opacity-100 transition-all duration-500">
+                                                    <Image
+                                                        src={urlImagem}
+                                                        alt={nome} 
+                                                        fill
+                                                        sizes="128px"
+                                                        className="object-contain" 
+                                                    />
+                                                </div>
+                                            ) : (
+                                                <div className="w-16 h-16 rounded-full bg-pink-100 text-pink-600 font-extrabold flex items-center justify-center text-2xl group-hover:bg-pink-600 group-hover:text-white transition-colors shadow-inner">
+                                                    {inicial}
+                                                </div>
+                                            )}
+                                        </div>
 
-                            // Se não tiver link preenchido no Drupal, mostra apenas a imagem sem ser clicável
-                            if (!temLinkValido) {
-                                return (
-                                    <div key={agradecimento.id} className={classeCartao} title={agradecimento.attributes.title}>
-                                        <Image
-                                            src={urlImagem}
-                                            alt={agradecimento.attributes.title || 'Logótipo de agradecimento'} 
-                                            fill
-                                            sizes="(max-width: 768px) 128px, 192px"
-                                            className="object-contain" 
-                                        />
+                                        {/* PARTE DE BAIXO: Nome da Pessoa e o Motivo */}
+                                        <div className="flex flex-col items-center">
+                                            <h3 className="font-extrabold text-gray-900 group-hover:text-pink-600 text-lg transition-colors">
+                                                {nome}
+                                            </h3>
+                                            
+                                            {motivo && (
+                                                <p className="text-sm text-gray-500 mt-1.5 leading-snug italic">
+                                                    "{motivo}"
+                                                </p>
+                                            )}
+                                        </div>
+
                                     </div>
                                 );
-                            }
 
-                            return (
-                                <Link 
-                                    href={urlDestino}
-                                    key={agradecimento.id} 
-                                    target={urlDestino.startsWith('http') ? "_blank" : undefined}
-                                    rel={urlDestino.startsWith('http') ? "noopener noreferrer" : undefined}
-                                    className={classeCartao}
-                                    title={agradecimento.attributes.title}
-                                >
-                                    <Image
-                                        src={urlImagem}
-                                        alt={agradecimento.attributes.title || 'Logótipo de agradecimento'} 
-                                        fill
-                                        sizes="(max-width: 768px) 128px, 192px"
-                                        className="object-contain" 
-                                    />
-                                </Link>
-                            );
-                        })}
+                                // Se tiver um link válido no Drupal, torna o cartão clicável; senão devolve apenas o cartão
+                                if (temLinkValido) {
+                                    return (
+                                        <Link 
+                                            href={urlDestino}
+                                            key={agradecimento.id} 
+                                            target={urlDestino.startsWith('http') ? "_blank" : undefined}
+                                            rel={urlDestino.startsWith('http') ? "noopener noreferrer" : undefined}
+                                            title={nome}
+                                            className="w-full flex justify-center h-full"
+                                        >
+                                            {conteudoCartao}
+                                        </Link>
+                                    );
+                                }
 
-                    </div>
+                                return (
+                                    <div key={agradecimento.id} title={nome} className="w-full flex justify-center h-full">
+                                        {conteudoCartao}
+                                    </div>
+                                );
+                            })}
+
+                        </div>
+                    )}
                 </div>
             </section>
         );
     } catch (error) {
-        console.error("🛑 ERRO NO FETCH DE AGRADECIMENTOS:", error);
         return null;
     }
 }
