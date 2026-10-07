@@ -1,15 +1,16 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
-// Tipagem para os dados do Drupal (com suporte para o Motivo)
+// Tipo estrito (sem 'any') para passar no build de produção do servidor
+type CampoTextoDrupal = string | { value?: string; processed?: string } | null | undefined;
+
 type Agradecimento = {
     id: string;
     attributes: {
         title: string; 
-        // Suporta texto simples (string) ou caso tenhas escolhido texto formatado no Drupal
-        field_motivo?: string | { value?: string; processed?: string } | null;
-        field_descricao?: string | { value?: string; processed?: string } | null;
-        field_body?: string | { value?: string; processed?: string } | null;
+        field_motivo?: CampoTextoDrupal;
+        field_descricao?: CampoTextoDrupal;
+        field_body?: CampoTextoDrupal;
         field_link?: {
             uri: string;
             title?: string;
@@ -33,8 +34,8 @@ type ImagemAtributos = {
     };
 };
 
-// Função auxiliar para extrair texto limpo do Drupal (seja string simples ou objeto)
-function extrairTexto(campo: any): string | null {
+// Função auxiliar sem 'any' para o ESLint do servidor não bloquear o deploy
+function extrairTexto(campo: CampoTextoDrupal): string | null {
     if (!campo) return null;
     if (typeof campo === 'string') return campo;
     if (typeof campo === 'object') return campo.processed || campo.value || null;
@@ -52,7 +53,6 @@ export default async function Agradecimentos() {
     try {
         let res = await fetch(urlComImagem, { cache: 'no-store' });
 
-        // Se o campo field_imagem não existir no Drupal, tenta ir buscar sem o include para não dar erro 400
         if (res.status === 400) {
             res = await fetch(urlSimples, { cache: 'no-store' });
         }
@@ -93,7 +93,6 @@ export default async function Agradecimentos() {
                             {agradecimentos.map((agradecimento) => {
                                 const nome = agradecimento.attributes.title;
                                 
-                                // Procura o motivo em field_motivo (ou field_descricao / field_body por prevenção)
                                 const motivo = extrairTexto(agradecimento.attributes.field_motivo) 
                                             || extrairTexto(agradecimento.attributes.field_descricao)
                                             || extrairTexto(agradecimento.attributes.field_body);
@@ -109,7 +108,6 @@ export default async function Agradecimentos() {
                                         : `${baseUrl}${caminhoRelativo}`;
                                 }
                                 
-                                // Limpeza do Link (se existir)
                                 const rawUri = agradecimento.attributes.field_link?.uri;
                                 let urlDestino = '#';
                                 if (rawUri) {
@@ -121,7 +119,6 @@ export default async function Agradecimentos() {
 
                                 const inicial = nome ? nome.charAt(0).toUpperCase() : '★';
 
-                                // Desenho do Cartão: Topo (Imagem OU Avatar) + Base (Nome + Motivo por baixo)
                                 const conteudoCartao = (
                                     <div className="w-full max-w-xs bg-gray-50 hover:bg-white border border-gray-200 hover:border-pink-300 rounded-3xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col items-center text-center group h-full justify-between">
                                         
@@ -152,7 +149,7 @@ export default async function Agradecimentos() {
                                             
                                             {motivo && (
                                                 <p className="text-sm text-gray-500 mt-1.5 leading-snug italic">
-                                                    "{motivo}"
+                                                    &ldquo;{motivo}&rdquo;
                                                 </p>
                                             )}
                                         </div>
@@ -160,7 +157,6 @@ export default async function Agradecimentos() {
                                     </div>
                                 );
 
-                                // Se tiver um link válido no Drupal, torna o cartão clicável; senão devolve apenas o cartão
                                 if (temLinkValido) {
                                     return (
                                         <Link 
@@ -188,7 +184,7 @@ export default async function Agradecimentos() {
                 </div>
             </section>
         );
-    } catch (error) {
+    } catch {
         return null;
     }
 }
